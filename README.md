@@ -1,10 +1,3 @@
-# Data Structures and Algorithms Primer
+# Frontend Primer (Data Structures and Algorithms Primer)
 
-## Data Structures
-
-- Contiguous vs. Linked Data Structures
-- Arrays
-  - Simple vs Dynamic
-- Linked Lists
-
-##
+Repo for the [Frontend Primer](https://www.frontendprimer.com/) website.

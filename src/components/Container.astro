@@ -1,15 +1,9 @@
 ---
 import { cn } from "../lib/utils";
+
+const { class: className } = Astro.props;
 ---
 
-<main class="container max-w-screen-lg px-8 mx-auto py-10 md:py-20">
-  <article
-    class={cn(
-      "prose-lg prose-p:m-0",
-      "prose-headings:mt-0 prose-headings:tracking-tight prose-headings:font-medium prose-headings:mb-0",
-      "prose-ul:m-0 prose-li:m-0"
-    )}
-  >
-    <slot />
-  </article>
-</main>
+<div class={cn("container max-w-screen-lg px-8 mx-auto", className)}>
+  <slot />
+</div>

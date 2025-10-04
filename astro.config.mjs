@@ -7,5 +7,7 @@ import tailwind from '@astrojs/tailwind';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [mdx(), tailwind()]
+  integrations: [mdx({
+    syntaxHighlight: "prism",
+  }), tailwind()]
 });

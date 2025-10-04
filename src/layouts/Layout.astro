@@ -1,5 +1,8 @@
 ---
+import Minimap from "../components/Minimap.astro";
 import Container from "../components/Container.astro";
+import Article from "../components/Article.astro";
+// import Navbar from "../components/Navbar.astro";
 ---
 
 <!doctype html>
@@ -8,12 +11,52 @@ import Container from "../components/Container.astro";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/prism-one-light.css" />
     <meta name="generator" content={Astro.generator} />
-    <title>DSA Primer</title>
+    <meta
+      name="description"
+      content="A concise primer on Data Structures and Algorithms (Frontend), focusing on common patterns and techniques used in technical coding interviews. Includes examples and practice problems for quick interview preparation."
+    />
+    <meta name="author" content="Frontend Primer" />
+    <meta
+      name="keywords"
+      content="Frontend, Data Structures, Algorithms, Technical Interview, Coding Interview, Programming Interview, Interview Preparation, Two Pointers, Sliding Window, Binary Search, Tree Traversal, Graph Algorithms, Dynamic Programming"
+    />
+    <meta
+      property="og:title"
+      content="Frontend Primer - Data Structures and Algorithms Interview Guide"
+    />
+    <meta
+      property="og:description"
+      content="A concise primer on Data Structures and Algorithms (Frontend), focusing on common patterns and techniques used in technical coding interviews."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="Frontend Primer - Data Structures and Algorithms Interview Guide"
+    />
+    <meta
+      name="twitter:description"
+      content="A concise primer on Data Structures and Algorithms (Frontend), focusing on common patterns and techniques used in technical coding interviews."
+    />
+    <title>Frontend Primer</title>
   </head>
   <body>
-    <Container>
-      <slot />
+    <!-- <Navbar /> -->
+    <Container class="min-h-screen grid grid-cols-[200px_1fr]">
+      <div class="relative">
+        <Minimap />
+      </div>
+      <Article>
+        <slot />
+      </Article>
     </Container>
   </body>
 </html>
@@ -21,6 +64,7 @@ import Container from "../components/Container.astro";
 <style>
   html,
   body {
+    font-family: "IBM Plex Sans", sans-serif;
     margin: 0;
     width: 100%;
     height: 100%;

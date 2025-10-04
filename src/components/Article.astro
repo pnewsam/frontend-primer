@@ -1,0 +1,19 @@
+---
+import { cn } from "../lib/utils";
+---
+
+<main class:list={"py-10 md:py-20"}>
+  <article
+    class={cn(
+      "prose",
+      "prose-p:mt-0 prose-p:mb-4",
+      "prose-headings:mt-0 prose-headings:tracking-tight prose-headings:font-medium prose-headings:mb-4",
+      "prose-ul:mt-0 prose-ul:mb-4",
+      "prose-li:m-0",
+      "prose-a:text-blue-500 prose-a:no-underline prose-a:font-medium hover:prose-a:text-blue-600 hover:prose-a:underline",
+      "prose-pre:rounded-lg prose-pre:bg-neutral-100 prose-pre:p-4 prose-pre:border prose-pre:border-neutral-200"
+    )}
+  >
+    <slot />
+  </article>
+</main>
