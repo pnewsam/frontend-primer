@@ -5,31 +5,257 @@ layout: "../../layouts/Layout.astro"
 
 # Validated Form with Async Checks
 
-## Scenario
+## Objective
 
-Build a registration form with client-side validation and an async username availability check.
+> Implement a registration form with client-side validation and an asynchronous "username availability" check. Progress through stages to demonstrate correctness, resilience, accessibility, and scalable architecture.
 
-## Core Tasks
+## Context
 
-- Controlled inputs for email, username, password, confirm password
-- Inline validation and disabled submit when invalid
-- Asynchronous username check on blur
+Forms are a staple of frontend interviews. This exercise probes: controlled inputs, schema-based validation, async/race handling, UX polish, and testability.
 
-## Senior-Level Extensions
+## Starting Setup
 
-- Shared schema-based validation (Zod/Yup) with TS inference
-- Cancel stale async validations
-- Combine client, async, and server validations in one flow
-- Add password strength indicator and i18n error handling
-- Implement robust retry and recovery on submission
-- Write unit and integration tests for validation and async behavior
+### Scenario
 
-## Evaluation Criteria
+Build a "Create Account" form with fields: email, username, password, confirmPassword.
 
-| Area             | Expectation                                    |
-| ---------------- | ---------------------------------------------- |
-| State Management | Derived validity, minimal duplication          |
-| Async Control    | Race-safe, cancellable validations             |
-| UX               | Clear, responsive feedback                     |
-| Architecture     | Centralized schema and clean structure         |
-| Testing          | Comprehensive coverage of rules and edge cases |
+### Mock APIs
+
+```
+POST /api/validate-username
+body: { username: string }
+→ 200: { available: boolean }
+→ 429/500 sometimes; latency 150–700ms
+
+POST /api/register
+body: { email, username, password }
+→ 201: { id: string }
+→ 400: { fieldErrors?: { email?: string; username?: string }, message?: string }
+→ 500 sometimes; latency 200–900ms
+```
+
+### Assumptions
+
+- React + TypeScript.
+- No form libraries for Stage 1–2; schema lib (e.g., Zod/Yup) allowed from Stage 3 onward.
+- You may simulate APIs with setTimeout and random failures.
+
+## Stage 1 — Core Form and Client Validation (Foundational)
+
+### Goal
+
+> Create a controlled form with immediate client-side validation and a disabled submit until valid.
+
+### What to implement
+
+- Controlled inputs for all four fields.
+- **Validation rules:**
+  - Email format check.
+  - Username required, 3–20 chars, alphanumeric plus `-/_`.
+  - Password min length (e.g., 8), confirm password must match.
+- Inline error messages displayed on blur and on submit.
+- Submit button disabled when the form is invalid or submitting.
+
+### What you're practicing
+
+- Controlled inputs and derived validity.
+- Error messaging and timing (change vs blur vs submit).
+- Basic form state modeling: values, touched, errors, isValid, isSubmitting.
+
+### How interviewers evaluate
+
+| Category       | What to Look For                                                     |
+| -------------- | -------------------------------------------------------------------- |
+| Correctness    | Accurate rules, consistent error display, no stale errors            |
+| State modeling | Clear separation of values, validity, and submission state           |
+| UX clarity     | Predictable validation timing; disabled submit only when appropriate |
+| Communication  | Can explain validation timing trade-offs                             |
+
+### Self-check
+
+- Do errors appear at the right time (not too early, not too late)?
+- Does toggling between valid/invalid states cleanly update the button?
+- Can you explain your state shape and why it's minimal?
+
+## Stage 2 — Async Username Availability (Intermediate)
+
+### Goal
+
+> Add an asynchronous username availability check that is race-safe and doesn't degrade UX.
+
+### What to implement
+
+- Trigger availability check on username blur or after a small debounce while typing.
+- Show a distinct "checking…" state.
+- Prevent submission if the username is unavailable.
+- Handle network errors with a retry affordance.
+
+### Techniques
+
+- Use AbortController or a request ID token to avoid out-of-order responses replacing newer state.
+- Coalesce calls (e.g., ignore identical in-flight query or cache recent results).
+
+### What you're practicing
+
+- Async control and race safety within form flows.
+- Merging async validation outcomes into overall form validity.
+- UX for transient failures (retry, fallbacks).
+
+### How interviewers evaluate
+
+| Category     | What to Look For                                                   |
+| ------------ | ------------------------------------------------------------------ |
+| Async safety | No stale availability result overrides; clean effect cleanup       |
+| UX           | Clear feedback: checking/available/unavailable; unobtrusive errors |
+| Integration  | Async result participates in isValid without hacks                 |
+| Reasoning    | Can describe failure modes and mitigations                         |
+
+### Self-check
+
+- Type a username, trigger a slow check, then change the value—does the older response ever win?
+- How do you prevent spamming the endpoint while typing quickly?
+- What happens if the check fails due to 429—do you surface a retry?
+
+## Stage 3 — Submission Flow and Resilience (Advanced)
+
+### Goal
+
+> Implement a robust submit that integrates client validation, async signals, and server responses.
+
+### What to implement
+
+- On submit: lock the form, run final validation, send POST /api/register.
+- Distinguish server-side field errors from generic errors; map field errors to the correct inputs.
+- Keep user inputs on failure; show a non-blocking global error for non-field issues.
+- Successful submit: show confirmation and reset or navigate.
+
+### Techniques
+
+- A single "validate → submit → reconcile" pipeline.
+- Error normalization: convert server payloads into your errors shape.
+- Preserve user-entered values unless registration succeeds.
+
+### What you're practicing
+
+- End-to-end flow under real constraints.
+- Error surfaces: field-level vs global.
+- Recovery without data loss.
+
+### How interviewers evaluate
+
+| Category         | What to Look For                                                 |
+| ---------------- | ---------------------------------------------------------------- |
+| Flow correctness | No double submits; final validation gate before network          |
+| Error handling   | Accurate mapping of server errors; graceful retries              |
+| UX               | Submit button states, focus management to first error on failure |
+| Stability        | Works under throttled/failed network                             |
+
+### Self-check
+
+- Simulate a server-side username error even though the async check passed—does your form reconcile correctly?
+- Do you return focus to the first errored field after submit fails?
+
+## Stage 4 — Architecture, Accessibility, and UX Polish (Senior)
+
+### Goal
+
+> Make the solution scalable, testable, and inclusive.
+
+### What to implement (pick several)
+
+- Schema-first validation (Zod/Yup) used for both client checks and server parsing; derive TS types from schema.
+- Password strength meter with actionable feedback; mask reveal toggle with keyboard support.
+- Internationalization-ready errors; central error message registry.
+
+### Accessibility:
+
+- Labels/ids, aria-invalid, aria-describedby for errors.
+- Logical focus order; return focus on dialogs or after submit.
+
+### Performance:
+
+- Minimize re-renders with controlled granularity.
+- Debounce expensive checks; memoize derived values.
+
+### Architecture:
+
+- Extract reusable useForm or useField primitives with a clear API.
+- Pluggable async validators (e.g., `(value, signal) => Promise<ValidationResult>`).
+
+### What you're practicing
+
+- Design for reuse and growth (design-system thinking).
+- A11y fundamentals for form controls.
+- Type-safe contracts and schema centralization.
+
+### How interviewers evaluate
+
+| Category     | What to Look For                                             |
+| ------------ | ------------------------------------------------------------ |
+| Architecture | Clean abstractions; readable API for future forms            |
+| A11y         | Proper roles/attributes; keyboard and screen reader support  |
+| Performance  | Measured, not premature; avoids noisy renders                |
+| Type-safety  | Schema as single source of truth; narrow types at boundaries |
+
+### Self-check
+
+- Could another team use your useForm API tomorrow with minimal guidance?
+- Can you run an automated a11y audit (e.g., axe) and fix the basics?
+- Under React Profiler, does typing cause only necessary updates?
+
+## Stage 5 — Reflection and Testing Strategy (Meta)
+
+### Goal
+
+> Document how you'd validate correctness and maintain confidence over time.
+
+### Prompts
+
+- What unit tests do you need for validation rules and async username check (use fake timers)?
+- What integration tests cover the full submit flow, including mapping server field errors?
+- How would you test accessibility (focus order, aria-\* wiring)?
+- What telemetry would you log in production (validation failure rates, latency, retries)?
+
+### How interviewers evaluate
+
+| Category       | What to Look For                             |
+| -------------- | -------------------------------------------- |
+| Testing focus  | Tests the right things at the right layer    |
+| Observability  | Knows what to measure to catch regressions   |
+| Self-awareness | Identifies risks and prioritizes mitigations |
+| Communication  | Clear about trade-offs and future work       |
+
+### Self-check
+
+Write a brief "engineering summary":
+
+- Architecture overview and why you chose it.
+- Known limitations and next steps.
+- Test plan highlights (unit/integration/e2e).
+
+## Summary Rubric
+
+| Stage | Focus                 | Evaluation Emphasis                              | Bar for Senior                     |
+| ----- | --------------------- | ------------------------------------------------ | ---------------------------------- |
+| 1     | Core validation       | Correct rules, clean state, clear errors         | Solid, predictable baseline        |
+| 2     | Async availability    | Race safety, coalescing, UX clarity              | No stale results; resilient checks |
+| 3     | Submission resilience | Server error mapping, recovery, focus            | Robust flow under failure          |
+| 4     | Architecture & a11y   | Reusable primitives, schema-first, accessibility | Scalable and inclusive             |
+| 5     | Testing & ownership   | Layered tests, metrics, reflection               | Clear plan and trade-offs          |
+
+Senior-level performance typically means: Stage 1–2 are solid and quick; Stage 3 is reliable under flaky networks; Stage 4 shows reusable architecture and accessibility; Stage 5 demonstrates a thoughtful testing and observability plan.
+
+## Common Pitfalls to Watch For
+
+- Mixing value and error concerns in a single mutable blob; hard to reason about updates.
+- Async availability result overriding a newer username (missing abort or token guard).
+- Errors that only show after submit, causing poor usability.
+- Losing form data on failed submit; not returning focus to first error.
+- Over-validating on every keystroke causing jank; lacking debounce.
+- Schema mismatch between client and server leading to untyped edge cases.
+
+## Minimal Materials to Start
+
+- Type definitions for FormValues and FieldErrors.
+- Mock `validateUsername(username, { signal })` and `register(data)` with randomized delay and failures.
+- Empty React component and a test file scaffold with fake timers enabled.

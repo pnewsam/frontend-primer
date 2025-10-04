@@ -5,31 +5,232 @@ layout: "../../layouts/Layout.astro"
 
 # Infinite Scroll Feed with Caching
 
-## Scenario
+## Objective
 
-Create a feed that loads additional posts as the user scrolls.
+> Implement a timeline-style feed that loads additional items as the user scrolls. Progress from a basic "load more on visibility" to a robust, cached, and optimistic system that behaves well under latency and failures.
 
-## Core Tasks
+## Context
 
-- Fetch next page when the bottom sentinel becomes visible
-- Show loading indicators and an end-of-feed message
+This exercise probes: IntersectionObserver or scroll-driven triggers, pagination state, duplicate prevention, caching, optimistic mutations, retry/backoff, and UX smoothness.
 
-## Senior-Level Extensions
+## Starting Setup
 
-- Cancel inflight requests and de-duplicate pages
-- Implement client-side cache with stale-while-revalidate logic
-- Support optimistic "like" mutations with rollback
-- Add retry logic with exponential backoff
-- Preserve scroll position across navigation
-- Apply image lazy-loading, prefetching, and virtualization
-- Write tests for race conditions and pagination integrity
+### Dataset / API
 
-## Evaluation Criteria
+Posts with fields: id, author, content, createdAt, liked (boolean), likeCount (number), media?: `{ url, width, height }`.
 
-| Area         | Expectation                                   |
-| ------------ | --------------------------------------------- |
-| Async Logic  | Robust cancellation, retry, and cache control |
-| Performance  | Smooth scroll and efficient resource usage    |
-| Reliability  | Handles flaky networks gracefully             |
-| Architecture | Modular and cache-aware design                |
-| Testing      | Deterministic, race-safe test coverage        |
+### Mock APIs
+
+`GET /api/posts?page=<n>&pageSize=<k>`
+
+- → 200: `{ items: Post[], hasMore: boolean }`
+
+`POST /api/posts/:id/like`
+
+- body: `{ like: boolean }`
+- → 200: `{ liked: boolean, likeCount: number }`
+- → 409/500 sometimes; latency 150–900ms
+
+(Inject randomized delay, occasional 429/500; sometimes duplicate items across pages to test de-dupe.)
+
+### Assumptions
+
+- React + TypeScript
+- IntersectionObserver preferred over scroll math
+- No external data libs required (you may discuss React Query-style patterns in Stage 4)
+
+## Stage 1 — Load More on Scroll (Foundational)
+
+### Goal
+
+> Render the first page and automatically load the next when the bottom sentinel becomes visible.
+
+### What to implement
+
+- Initial fetch of page 1 on mount
+- A sentinel element at the end of the list; when visible, request next page
+- Loading indicator and "no more posts" end-cap
+- Basic error state with a retry button for the last failed request
+
+### What you're practicing
+
+- IntersectionObserver lifecycle and cleanup
+- Minimal pagination state: page, items[], isLoading, hasMore, error
+
+### How interviewers evaluate
+
+| Category       | What to Look For                                   |
+| -------------- | -------------------------------------------------- |
+| Correctness    | Fetches sequential pages; stops when hasMore=false |
+| State modeling | Clear separation of in-flight vs accumulated items |
+| UX clarity     | Visible loading and end-of-feed cues; retry works  |
+| Communication  | Explains observer thresholds and cleanup reasoning |
+
+### Self-check
+
+- Does the sentinel trigger exactly once per page (no duplicate requests)?
+- Does retry resume correctly after an error without losing already-fetched posts?
+
+## Stage 2 — De-duplication and Race Safety (Intermediate)
+
+### Goal
+
+> Ensure items are unique and prevent out-of-order responses from corrupting state.
+
+### What to implement
+
+- De-duplication by id when appending new pages
+- Guard against parallel "next page" requests (e.g., rapid sentinel toggles)
+- Abort or ignore stale fetches when pagination state changes (e.g., filter or feed reset)
+
+### Techniques
+
+- Track an inFlightPage and ignore additional triggers until it resolves
+- Use AbortController to cancel superseded requests
+- Maintain a Set of seen IDs for fast de-dupe
+
+### What you're practicing
+
+- Concurrency control and idempotent state transitions
+- Robust merges of remote pages into local state
+
+### How interviewers evaluate
+
+| Category           | What to Look For                                            |
+| ------------------ | ----------------------------------------------------------- |
+| Async control      | No double-fetch per page; clean aborts on reset             |
+| Data integrity     | No duplicates; stable order across appends                  |
+| Edge-case handling | Works with jittery observer or variable latency             |
+| Reasoning          | Can describe how stale responses are identified and ignored |
+
+### Self-check
+
+- If the server returns duplicates across page boundaries, do you ever show repeats?
+- If the sentinel momentarily hides/shows, do you fire again unnecessarily?
+
+## Stage 3 — Optimistic Mutations (Advanced)
+
+### Goal
+
+> Support local interactions (e.g., like/unlike) without waiting for the server, with safe rollback on failure.
+
+### What to implement
+
+- Clicking "like" immediately updates UI (liked state and count)
+- Send mutation request; if it fails, rollback to pre-click state and show an inline, non-blocking error
+- Prevent double-click spamming while a mutation is in-flight per post
+
+### What you're practicing
+
+- Local optimistic updates and reconciliation with server truth
+- Mutation scoping: per-item in-flight state, not global
+- Error UX that preserves user context
+
+### How interviewers evaluate
+
+| Category          | What to Look For                                                       |
+| ----------------- | ---------------------------------------------------------------------- |
+| UX and resilience | Feels instant; failures don't leave UI corrupted                       |
+| State isolation   | Only the targeted post is "busy"; rest of feed remains interactive     |
+| Rollback logic    | Correctly returns to previous state on error                           |
+| Communication     | Explains consistency model: optimistic vs eventual server confirmation |
+
+### Self-check
+
+- Simulate a 409/500: does the like revert cleanly and show a clear message?
+- Can you quickly toggle like/unlike without glitches or counter drift?
+
+## Stage 4 — Caching, Prefetching, and Performance (Senior)
+
+### Goal
+
+> Reduce redundant work, stabilize scrolling, and smooth UX under load.
+
+### What to implement (choose several)
+
+- Cache pages in memory keyed by page and merge by id; on revisiting, render cached instantly
+- Prefetch the next page when the user is within N pixels/one viewport of the bottom (or when the previous page settles)
+- Media performance: `loading="lazy"`, `decoding="async"`, width/height to avoid layout shifts
+- Virtualization for very long feeds; ensure correct item keys and avoid "jumping"
+- Background refresh (stale-while-revalidate): when revisiting page 1, show cached first then refresh silently, reconciling by id without jank
+- Lightweight debug HUD (optional): cache hits/misses, in-flight requests, last latency
+
+### What you're practicing
+
+- Cache design and reconciliation
+- Prefetch heuristics and bandwidth trade-offs
+- Visual stability and scroll performance under heavy DOM
+
+### How interviewers evaluate
+
+| Category      | What to Look For                                            |
+| ------------- | ----------------------------------------------------------- |
+| Architecture  | Cohesive caching layer; clean reconciliation rules          |
+| Performance   | Observable improvements; avoids re-render storms            |
+| UX smoothness | No jarring jumps; predictable image loading                 |
+| Trade-offs    | Aware of memory vs. freshness; explains eviction strategies |
+
+### Self-check
+
+- Toggle network throttling: does cached data appear immediately with a later quiet refresh?
+- Does virtualization preserve keyboard focus and scroll position when items change?
+
+## Stage 5 — Reliability: Backoff, Recovery, and State Restoration (Meta)
+
+### Goal
+
+> Strengthen the feed against flaky networks and app lifecycle changes.
+
+### What to implement
+
+- Retry strategy with exponential backoff and jitter for transient GET failures
+- A global "Refresh" control (or pull-to-refresh on mobile) to revalidate the feed from page 1 without losing scroll context, if feasible
+- Preserve and restore scroll position when navigating away and back (route change → return)
+- Optional: offline read with hydration from local storage for page 1; reconcile on reconnect
+
+### What you're practicing
+
+- Practical reliability patterns and user recovery flows
+- App lifecycle awareness beyond the happy path
+
+### How interviewers evaluate
+
+| Category           | What to Look For                                           |
+| ------------------ | ---------------------------------------------------------- |
+| Resilience         | Handles failure modes gracefully without trapping the user |
+| User control       | Clear manual recovery options                              |
+| Lifecycle thinking | Position and feed state survive navigation                 |
+| Communication      | Prioritizes what matters under real constraints            |
+
+### Self-check
+
+- Force every third request to fail: do users still make forward progress?
+- After navigating to a detail view and back, does the feed restore where you left off?
+
+## Summary Rubric
+
+| Stage | Focus                       | Evaluation Emphasis                 | Bar for Senior                             |
+| ----- | --------------------------- | ----------------------------------- | ------------------------------------------ |
+| 1     | Scroll-triggered pagination | Correct observer use; clear states  | Solid baseline with no duplicate loads     |
+| 2     | De-dupe & race safety       | Idempotent merges; guarded requests | No duplicates; no stale overwrites         |
+| 3     | Optimistic mutations        | Instant UX with rollback            | Localized in-flight state; robust rollback |
+| 4     | Cache & performance         | Prefetching; virtualization; SWR    | Smooth, measured, maintainable             |
+| 5     | Reliability & lifecycle     | Backoff; restore; manual refresh    | Users recover quickly from failures        |
+
+Senior-level performance typically means: Stage 1–2 are crisp and race-safe; Stage 3 shows confident optimistic updates; Stage 4 introduces a sensible cache/prefetch strategy and media/perf improvements; Stage 5 demonstrates practical reliability and lifecycle handling.
+
+## Common Pitfalls
+
+- Letting multiple "next page" requests proceed concurrently; duplicated or out-of-order pages
+- Appending arrays blindly without de-duplication; visible repeated posts
+- Mutation logic that increments/decrements counters incorrectly on failures
+- Prefetching too aggressively, wasting bandwidth or causing request stampedes
+- Virtualization that breaks accessibility or loses focus/scroll anchors on updates
+- Observer not disconnected on unmount or re-created on every render, causing leaks
+
+## Minimal Materials to Start
+
+- Post type and a mock dataset (200–1,000 posts) with randomized ordering
+- `fetchPosts(page, pageSize, { signal })` mock with occasional duplicates, latency, and 429/500 errors
+- `likePost(id, like, { signal })` mock with chance of 409/500
+- A React skeleton with a feed component, a useIntersection helper, and a test setup with fake timers and network stubs

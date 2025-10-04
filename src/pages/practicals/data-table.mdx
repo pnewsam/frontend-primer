@@ -5,31 +5,256 @@ layout: "../../layouts/Layout.astro"
 
 # Data Table (Sort / Filter / Paginate)
 
-## Scenario
+## Objective
 
-Implement a product table with sorting, filtering, and pagination.
+> Implement a product table that supports sorting, filtering, and pagination. Progress from a simple client-side version to a server-driven, accessible, and performant table with shareable URL state.
 
-## Core Tasks
+## Context
 
-- Sort by column header and filter via text input
-- Paginate data client-side
-- Handle empty and loading states
+This exercise mirrors a frequent interview prompt that probes: state modeling, client vs. server trade-offs, URL synchronization, accessibility, and performance for large data sets.
 
-## Senior-Level Extensions
+## Starting Setup
 
-- Create a headless table logic layer separate from UI
-- Sync sort/filter/page state to URL parameters
-- Simulate server-driven pagination with a fake API
-- Add cursor-based pagination and skeleton loaders
-- Virtualize large datasets for performance
-- Add tests for sorting stability and state synchronization
+### Dataset
 
-## Evaluation Criteria
+Products with fields: id, name, price, category, rating (1–5), createdAt.
 
-| Area           | Expectation                                      |
-| -------------- | ------------------------------------------------ |
-| Architecture   | Reusable headless logic and clean UI             |
-| State Handling | Correct sync across pagination, URL, and filters |
-| Performance    | Virtualization and efficient rendering           |
-| Accessibility  | Keyboard navigation and focus management         |
-| Reliability    | Error handling and consistent state recovery     |
+### Mock APIs
+
+Begin client-side (in-memory). Later switch to server-style responses.
+
+**Server-style (Stage 3+):**
+
+```
+GET /api/products?q=<text>&sort=<field>:<asc|desc>&page=<n>&pageSize=<k>
+→ 200: { items: Product[], total: number, page: number, pageSize: number }
+```
+
+**Alternative (cursor-based):**
+
+```
+GET /api/products?cursor=<opaque>&q=<text>&sort=<field>:<asc|desc>&limit=<k>
+→ 200: { items: Product[], nextCursor?: string }
+```
+
+### Assumptions
+
+- React + TypeScript
+- No table libraries initially. You may introduce your own headless layer as you advance
+- Use randomized latency and occasional 500/429 in server mode
+
+## Stage 1 — Client-Side Table (Foundational)
+
+### Goal
+
+> Render an in-memory table with sort, filter, and pagination.
+
+### What to implement
+
+- Text filter that matches on name and category
+- Clickable column headers for sorting (toggle asc/desc)
+- Client-side pagination (page size fixed, e.g., 20)
+- Empty/loading placeholders (simulate loading briefly on interactions to prove state handling)
+- Basic keyboard focus order and visible focus for interactive elements
+
+### What you're practicing
+
+- State modeling for query, sort, page, and derived rows
+- Pure, deterministic transforms: filteredRows, sortedRows, pagedRows
+- Clear UI states: empty, loading (simulated), normal
+
+### How interviewers evaluate
+
+| Category       | What to Look For                                                   |
+| -------------- | ------------------------------------------------------------------ |
+| Correctness    | Sorting toggles correctly; filter and pagination compose correctly |
+| State modeling | Separate base data from derived views; minimal recomputation       |
+| UX clarity     | Predictable controls; no flicker; obvious empty states             |
+| Communication  | Can explain order of operations: filter → sort → paginate          |
+
+### Self-check
+
+- Do sort and filter survive page changes without inconsistency?
+- Are derived lists memoized to avoid unnecessary recomputations?
+
+## Stage 2 — URL State & Table Control Surface (Intermediate)
+
+### Goal
+
+> Synchronize table state with the URL so views are shareable and back/forward works.
+
+### What to implement
+
+- Read initial table state from query params: `?q=&sort=&dir=&page=`
+- Update URL on user actions with history API (push/replace)
+- Make table a controlled component with a clear external API:
+  - `state: { query, sortBy, sortDir, page }`
+  - `onStateChange(next)` callback
+
+### What you're practicing
+
+- Source-of-truth decisions (URL vs. in-memory)
+- Controlled component patterns and predictable state transitions
+- Back/forward navigation without "jumping" or double-renders
+
+### How interviewers evaluate
+
+| Category     | What to Look For                                               |
+| ------------ | -------------------------------------------------------------- |
+| Architecture | Clean separation: view components vs. table state manager      |
+| Robustness   | Initial state hydration; resilient to malformed params         |
+| UX           | Navigation parity with browser controls                        |
+| Reasoning    | Can explain trade-offs of URL-as-state (shareability, reloads) |
+
+### Self-check
+
+- Refresh the page: does the table restore exactly?
+- Hit back/forward: do filter/sort/page reflect history without losing derived state?
+
+## Stage 3 — Server-Driven Pagination (Advanced)
+
+### Goal
+
+> Replace client-side transforms with server-style fetching and real loading/error states.
+
+### What to implement
+
+- Fetch from GET /api/products using q, sort, page, pageSize
+- Display total count and compute total pages
+- Skeleton rows while loading; retry on transient errors; empty results UX
+- Abort inflight request when controls change; prevent stale data from flashing
+
+### Extensions (choose one)
+
+- Switch to cursor-based pagination (nextCursor) and explain trade-offs
+- Keep client cache keyed by `{q, sort, page}` to avoid re-fetching; prefetch adjacent pages
+
+### What you're practicing
+
+- Async control, race safety, and reconciliation with UI state
+- Modeling server contracts (total vs. cursor)
+- Practical caching and prefetching strategies
+
+### How interviewers evaluate
+
+| Category        | What to Look For                                         |
+| --------------- | -------------------------------------------------------- |
+| Async safety    | Aborts or ignores stale responses; deterministic updates |
+| UX resilience   | Retry patterns; preserves prior page during transitions  |
+| Server contract | Correctly computes pagination from API responses         |
+| Communication   | Can articulate client vs. server pagination trade-offs   |
+
+### Self-check
+
+- Throttle network; change sort rapidly—do late responses overwrite newer state?
+- On error, can you retry without losing current context?
+
+## Stage 4 — Performance, Accessibility, and Table API (Senior)
+
+### Goal
+
+> Demonstrate scalability and inclusivity for large datasets and real-world usage.
+
+### What to implement (pick several)
+
+- Virtualized rows for large lists; stable row keys; sticky header
+- Column definitions with custom renderers/accessors:
+
+```typescript
+type Column<T> = {
+  id: string;
+  header: string;
+  accessor: (row: T) => ReactNode;
+  sortable?: boolean;
+  width?: number;
+};
+```
+
+- Resizable columns and preserved column widths in URL or local storage
+- **Accessibility:**
+  - Proper table semantics (`<table>`, `<thead>`, `<tbody>`, `<th scope="col">`, `<td>`) or grid pattern if needed
+  - Keyboard navigation for pagination controls and column sort toggles
+  - Visible focus indicators; aria-sort on headers; announce result counts
+- **Security:** escape or sanitize any HTML-ish cells (XSS safety)
+- **Observability:** simple metrics/logs for fetch latency, error rates, cache hit rate
+
+### What you're practicing
+
+- Headless logic layer vs. presentational table
+- Extensible column API that teams can adopt
+- A11y-first table behaviors and semantics
+- Real performance techniques (virtualization, memoization)
+
+### How interviewers evaluate
+
+| Category      | What to Look For                                               |
+| ------------- | -------------------------------------------------------------- |
+| Architecture  | Reusable headless engine; clean presentational layer           |
+| Performance   | Measured improvements; avoids re-render storms                 |
+| Accessibility | Standards-compliant semantics; keyboard parity                 |
+| API design    | Clear column model; minimal surface area; predictable behavior |
+
+### Self-check
+
+- Under React Profiler, does filtering or paging cause only necessary updates?
+- Can you navigate header sorts and pagination via keyboard alone?
+- Does virtualization behave correctly with dynamic row heights or is it documented as a constraint?
+
+## Stage 5 — Reflection, Testing, and Hardening (Meta)
+
+### Goal
+
+> Codify your verification plan and surface realistic risks.
+
+### Prompts
+
+- Unit tests: sorting stability, filter predicate edge cases, URL parsing/serialization helpers
+- Integration tests: changing sort/filter updates URL and fetch params; retry flow
+- Accessibility tests: header roles, aria-sort, focus order; axe audit
+- Performance tests: virtualization sanity; memoized selectors
+- Hardening: handle extreme total counts, server-side sorting precision (locale/number), and empty categories
+
+### How interviewers evaluate
+
+| Category         | What to Look For                                              |
+| ---------------- | ------------------------------------------------------------- |
+| Testing strategy | Right tests at right layers; fake timers for debounce if used |
+| Risk awareness   | Identifies server/client contract pitfalls                    |
+| Ownership        | Clear next steps and operational metrics                      |
+| Communication    | Concise explanation of trade-offs and constraints             |
+
+### Self-check
+
+Write a brief summary:
+
+- Table state architecture, URL sync approach, server mode contract
+- Known limitations (e.g., grouping, multi-sort, column pinning) and why you deferred them
+- What you would measure in production and alert on
+
+## Summary Rubric
+
+| Stage | Focus               | Evaluation Emphasis                              | Bar for Senior                        |
+| ----- | ------------------- | ------------------------------------------------ | ------------------------------------- |
+| 1     | Client-side basics  | Correct transforms; clean state; clear UI states | Solid, reliable baseline              |
+| 2     | URL/state control   | Controlled table, shareable views, nav parity    | Robust hydration and history handling |
+| 3     | Server-driven flows | Async safety; errors; caching/prefetch           | Stable, race-safe interactions        |
+| 4     | Perf & a11y & API   | Virtualization; semantics; column model          | Scalable, inclusive, reusable         |
+| 5     | Tests & ownership   | Layered tests; metrics; risk analysis            | Clear verification and hardening plan |
+
+Senior-level performance typically means: Stage 1–2 are crisp; Stage 3 handles latency and errors without jank; Stage 4 introduces a reusable headless layer and accessibility; Stage 5 presents a concrete test plan and operational metrics.
+
+## Common Pitfalls
+
+- Mixing base data with derived state; duplicated source-of-truth
+- Re-sorting or re-filtering on every render without memoization
+- URL state that partially syncs (e.g., page updates but sort doesn't) causing confusion on refresh
+- Race conditions in server mode; late responses replace newer views
+- Table semantics broken by div-based grids without proper ARIA or keyboard support
+- Virtualization that breaks keyboard navigation or screen reader comprehension
+
+## Minimal Materials to Start
+
+- Product type and an in-memory dataset (200–2,000 rows to make perf issues visible)
+- Pure helpers: filterRows, sortRows, paginateRows with unit tests
+- A skeleton React component and a small router wrapper for URL state tests
+- A mock server (or fetch stub) that supports both page-based and cursor-based APIs, with random latency and occasional 429/500

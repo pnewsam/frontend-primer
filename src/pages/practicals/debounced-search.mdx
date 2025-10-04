@@ -5,31 +5,192 @@ layout: "../../layouts/Layout.astro"
 
 # Debounced Search / Autocomplete
 
-## Scenario
+## Objective
 
-Implement a user search component that fetches suggestions from an API and supports keyboard navigation.
+> Implement a responsive, accessible search box that fetches results from a remote API. You'll start with the basics (functionality) and progressively build toward production-grade quality (correctness, UX, accessibility, and architecture).
 
-## Core Tasks
+## Context
 
-- Input triggers API fetch with 300ms debounce
-- Display loading, error, and empty states
-- Render selectable results list
+This exercise reflects one of the most common frontend interview patterns: building a small but realistic component that tests core fundamentals — async control, React state management, and attention to detail.
 
-## Senior-Level Extensions
+## Stage 1 — Core Functionality (Foundational)
 
-- Abort stale requests and handle race conditions
-- Prefetch likely queries when focused
-- Virtualize large result sets
-- Implement full ARIA combobox compliance
-- Extract a headless useAutocomplete() hook and render prop component
-- Add unit and integration tests for debounce, cancellation, and navigation
+### Goal
 
-## Evaluation Criteria
+> Build a search input that queries a mock API with a debounce and basic UI states.
 
-| Area          | Expectation                                |
-| ------------- | ------------------------------------------ |
-| Correctness   | Handles async safely, no race bugs         |
-| Architecture  | Clear separation of logic and presentation |
-| Accessibility | Proper keyboard and ARIA support           |
-| Performance   | Efficient rendering and debouncing         |
-| Testing       | Thorough timing and behavior coverage      |
+### What to Implement
+
+- A text input that updates a search query
+- Debounce API requests (~300ms)
+- Show loading, empty, and error states
+- Render results when available
+- Clear results when input is cleared
+
+### What You're Practicing
+
+- React state modeling (query, results, status, error)
+- Effect cleanup and dependency management
+- Basic async workflows and UI state transitions
+
+### How Interviewers Evaluate
+
+| Category              | What They're Watching For                             |
+| --------------------- | ----------------------------------------------------- |
+| Technical correctness | Debounce works, fetch occurs once per user intent     |
+| Code organization     | Clean hooks/effects, minimal duplication              |
+| Error handling        | Graceful recovery from failed requests                |
+| Communication         | Clear reasoning behind debounce placement and timings |
+
+### Self-check
+
+- Does typing "ab" quickly result in one API call for "ab"?
+- Does the UI avoid flickering between states?
+- Can you explain your state structure clearly?
+
+## Stage 2 — Concurrency & Race Safety (Intermediate)
+
+### Goal
+
+> Prevent outdated responses from overwriting newer ones when multiple requests overlap.
+
+### What to Implement
+
+- Cancel in-flight requests using AbortController, or track request IDs
+- Only apply the latest response to state
+- Ensure cleanup happens on query change or unmount
+
+### What You're Practicing
+
+- Safe concurrent async handling
+- Reasoning about race conditions in React effects
+- Coordinating cleanup logic
+
+### How Interviewers Evaluate
+
+| Category            | What to Look For                                   |
+| ------------------- | -------------------------------------------------- |
+| Async understanding | Correct use of cancellation or token tracking      |
+| Edge-case handling  | No flicker or stale data                           |
+| Problem-solving     | Awareness of real-world network conditions         |
+| Depth of reasoning  | Can articulate why the bug occurs, not just fix it |
+
+### Self-check
+
+- Type "react" then delete to "re" — does "react" data ever reappear later?
+- Can you explain the lifecycle of an aborted request in your code?
+
+## Stage 3 — Interaction & Accessibility (Advanced)
+
+### Goal
+
+> Support full keyboard and screen-reader interaction for the autocomplete experience.
+
+### What to Implement
+
+- Keyboard navigation (Up/Down arrows, Enter, Escape)
+- Mouse click selection
+- Proper ARIA roles and attributes (combobox, listbox, option, etc.)
+- Focus management: input regains focus after selection
+
+### What You're Practicing
+
+- Accessible component design
+- Managing keyboard state (activeIndex, isOpen)
+- Building inclusive interactions
+
+### How Interviewers Evaluate
+
+| Category            | What to Look For                               |
+| ------------------- | ---------------------------------------------- |
+| Accessibility       | Implements correct ARIA patterns               |
+| UX polish           | Predictable focus behavior, smooth transitions |
+| Structural thinking | Clear separation of input vs popup logic       |
+| Initiative          | Brings up a11y without being prompted          |
+
+### Self-check
+
+- Can you use the component entirely with a keyboard?
+- Does it meet the minimal WAI-ARIA combobox pattern?
+- Does the focus behave predictably when selecting an item?
+
+## Stage 4 — Architecture & Performance (Senior)
+
+### Goal
+
+> Show that your implementation scales, both technically and organizationally.
+
+### What to Implement
+
+- Extract logic into a reusable useAutocomplete hook or headless component
+- Add lightweight caching for repeated queries
+- Use React.memo or stable callbacks to prevent re-renders
+- Optionally prefetch results on focus
+
+### What You're Practicing
+
+- Abstraction design
+- Reusability and API design for other teams
+- Performance awareness in real applications
+
+### How Interviewers Evaluate
+
+| Category      | What to Look For                                 |
+| ------------- | ------------------------------------------------ |
+| Architecture  | Headless hook, clean interface                   |
+| Performance   | Efficient re-renders and memoization             |
+| Reusability   | Flexible, documented API surface                 |
+| Communication | Explains trade-offs (e.g., caching vs freshness) |
+
+### Self-check
+
+- Can you describe how your useAutocomplete hook could be tested independently?
+- How would you expose this as a reusable component within a design system?
+- Does typing feel instantaneous under heavy load?
+
+## Stage 5 — Reflection & Testing Strategy (Meta)
+
+### Goal
+
+> Demonstrate the ability to self-critique and reason about trade-offs.
+
+### Reflection prompts
+
+- What are the main failure cases in your current design?
+- How would you test your debounce logic with fake timers?
+- What integration tests would ensure correct behavior across states?
+- What would you prioritize next if you had more time (e.g., SSR, analytics, cache persistence)?
+
+### How Interviewers Evaluate
+
+| Category        | What to Look For                                     |
+| --------------- | ---------------------------------------------------- |
+| Self-awareness  | Identifies trade-offs and limitations                |
+| Testing mindset | Thinks in terms of verification and confidence       |
+| Communication   | Reflects clearly on decisions made under pressure    |
+| Depth           | Proposes meaningful extensions, not arbitrary polish |
+
+### Self-check
+
+Write a short "postmortem":
+
+- What went well technically?
+- What you'd refactor?
+- What production hardening steps you'd take (metrics, retries, a11y audit)?
+
+## Summary Rubric
+
+| Stage | Focus                | Evaluation Emphasis        | Bar for Senior               |
+| ----- | -------------------- | -------------------------- | ---------------------------- |
+| 1     | Debounce & UI states | Basic correctness, clarity | Flawless base behavior       |
+| 2     | Async safety         | Race handling, stability   | No stale data, clean effects |
+| 3     | Accessibility & UX   | Keyboard + ARIA            | Operable and inclusive       |
+| 4     | Architecture         | Reusable, performant code  | Scalable design              |
+| 5     | Reflection           | Testing and reasoning      | Clear ownership mindset      |
+
+### Senior-level performance means:
+
+- You finish Stage 2 quickly and solidly
+- You voluntarily introduce Stage 3–4 improvements
+- You can justify trade-offs out loud
+- You think like an owner — not just a coder

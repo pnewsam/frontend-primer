@@ -5,30 +5,239 @@ layout: "../../layouts/Layout.astro"
 
 # Toasts and Modal System
 
-## Scenario
+## Objective
 
-Develop a reusable global toast system and a modal component.
+> Build a reusable toast system and a modal component that are accessible, composable, and robust across app states. Progress from core behaviors to a headless API with a11y, timing control, and resilience.
 
-## Core Tasks
+## Context
 
-- Toast: enqueue, auto-dismiss, manual close
-- Modal: open/close behavior, backdrop, ESC and click-outside close, focus return
+This exercise probes: portals and layering, focus management, keyboard handling, ARIA roles, animation timing, cleanup on unmount/route changes, and API design for reuse.
 
-## Senior-Level Extensions
+## Starting Setup
 
-- Implement headless primitives (useToast, useModal) using context
-- Add focus traps and nested modal handling via portals
-- Support toast priorities, stacking, and motion preferences
-- Ensure ARIA compliance and inert background for modals
-- Provide RTL, theme, and reduced-motion support
-- Add tests for focus management, timing, and accessibility
+### Scenario
 
-## Evaluation Criteria
+- **Toasts:** ephemeral notifications displayed in a corner stack
+- **Modal:** a blocking dialog with header, body, and actions
 
-| Area          | Expectation                                    |
-| ------------- | ---------------------------------------------- |
-| API Design    | Composable and reusable primitives             |
-| Accessibility | Correct focus and ARIA handling                |
-| Resilience    | Cleanup on route changes and unmounts          |
-| Animation     | Smooth, non-blocking, motion-safe transitions  |
-| Testing       | Reliable accessibility and timing verification |
+### Assumptions
+
+- React + TypeScript
+- No external UI libraries for components; lightweight utility libs OK
+- You may stub a router to simulate route changes/unmounts
+
+## Stage 1 — Core Behaviors (Foundational)
+
+### Goal
+
+> Implement minimal toast and modal behavior.
+
+### What to implement
+
+**Toasts**
+
+- Programmatic API to enqueue a toast with title, description, duration (ms)
+- Auto-dismiss after duration; manual close button
+- Stack multiple toasts; newest appears at top
+
+**Modal**
+
+- Open/close via state prop
+- Backdrop; ESC closes; clicking backdrop closes
+- "Confirm" and "Cancel" actions call provided handlers
+
+### What you're practicing
+
+- Basic state machines for visibility and lifecycle
+- Rendering in layers without interfering with page flow (portals optional at this stage)
+- Clean separation of presentation vs. control state
+
+### How interviewers evaluate
+
+| Category       | What to Look For                               |
+| -------------- | ---------------------------------------------- |
+| Correctness    | Reliable open/close; auto-dismiss works        |
+| State modeling | Minimal, clear state; no timers leaking        |
+| UX clarity     | Predictable controls; obvious affordances      |
+| Communication  | Explains duration handling and close semantics |
+
+### Self-check
+
+- Can you enqueue 3 toasts quickly without clipping or overlap bugs?
+- Does the modal close consistently via ESC, backdrop, and action buttons?
+
+## Stage 2 — Accessibility and Focus Management (Intermediate)
+
+### Goal
+
+> Make both components operable with a keyboard and screen readers.
+
+### What to implement
+
+**Toasts**
+
+- Announce messages via an ARIA live region (polite for info, assertive for errors)
+- Each toast has a meaningful label for screen readers
+
+**Modal**
+
+- `role="dialog"` (or `alertdialog` for destructive actions) with `aria-modal="true"`
+- Focus trap within modal; focus initial element on open; restore focus to the trigger on close
+- Disable page scroll and mark the rest of the document as inert (or equivalent)
+- Proper labeling via `aria-labelledby`/`aria-describedby`
+
+### What you're practicing
+
+- WAI-ARIA patterns for dialogs and live regions
+- Focus lifecycle and restoration
+
+### How interviewers evaluate
+
+| Category         | What to Look For                                          |
+| ---------------- | --------------------------------------------------------- |
+| A11y correctness | Proper roles/attributes; trap behaves under tab/shift-tab |
+| Focus hygiene    | Initial focus, cycling, and restoration are robust        |
+| SR experience    | Toasts announced once; not spammy                         |
+| Reasoning        | Can explain when to use dialog vs alertdialog             |
+
+### Self-check
+
+- Navigate with keyboard only: can you open, interact, and close the modal without focus escapes?
+- Do toasts announce a single time and not steal focus?
+
+## Stage 3 — Headless API and Portals (Advanced)
+
+### Goal
+
+> Abstract logic from presentation; support composition and app-wide usage.
+
+### What to implement
+
+**Toasts**
+
+- ToastProvider with a context exposing addToast, removeToast
+- Render toasts via a portal to a top-level container
+- Support types/variants (success, error, info) that affect icon and ARIA politeness
+
+**Modal**
+
+- A headless `useModal()` (state + handlers) and a presentational `<Modal>` that consumes props
+- Render modal in a portal with layering above toasts
+- Expose a simple API for nested modals/sheets (document layering strategy)
+
+### What you're practicing
+
+- Headless component patterns and clean public APIs
+- Layering and z-index strategy via portals
+- Separation of logic and view; testability
+
+### How interviewers evaluate
+
+| Category      | What to Look For                              |
+| ------------- | --------------------------------------------- |
+| Architecture  | Headless primitives; simple, predictable APIs |
+| Reusability   | Components usable across routes/modules       |
+| Layering      | Portals used correctly; no stacking conflicts |
+| Communication | Explains API choices and trade-offs clearly   |
+
+### Self-check
+
+- Could another engineer consume useModal and ToastProvider without reading your code?
+- Do modals and toasts layer predictably (no overlap obscuring)?
+
+## Stage 4 — Timing, Reliability, and Motion (Senior)
+
+### Goal
+
+> Handle tricky timing, lifecycle, and motion without breaking accessibility.
+
+### What to implement (choose several)
+
+- Deterministic timers with pause-on-hover for toasts; extend duration while hovered
+- Ensure timers are cleared on unmount or route change; no orphaned timeouts
+- Reduced-motion support: disable or simplify transitions when `prefers-reduced-motion` is set
+- Non-blocking animations: enter/exit transitions that don't trap focus or double-fire handlers
+- Route-change cleanup: all open modals close; toasts either persist (if global) or clear (if route-scoped), based on an explicit policy
+
+### What you're practicing
+
+- Timer lifecycle and deterministic behavior
+- Motion and accessibility trade-offs
+- App lifecycle awareness (navigation, unmounts)
+
+### How interviewers evaluate
+
+| Category        | What to Look For                                        |
+| --------------- | ------------------------------------------------------- |
+| Reliability     | No timer leaks; consistent behavior across routes       |
+| Motion & a11y   | Animations don't harm operability; honor reduced motion |
+| Policy clarity  | Explicit design for what persists vs resets             |
+| Testing mindset | Uses fake timers to verify timing behaviors             |
+
+### Self-check
+
+- Fast-toggle a modal open/close during an exit animation—any stuck focus or double-calls?
+- Hover a toast near expiry—does it extend reliably and then dismiss?
+
+## Stage 5 — Extensibility, Theming, and Testing Strategy (Meta)
+
+### Goal
+
+> Demonstrate readiness for real-world scaling and maintenance.
+
+### What to implement
+
+- Theming tokens for spacing, radii, and colors (light/dark support)
+- RTL support (ensure focus and layout are correct)
+- Toast priority/queue policy (max N visible; FIFO or priority-based eviction)
+- Snapshot or contract tests for headless APIs; integration tests for focus trapping (keyboard-only flows)
+- Accessibility checks (axe) in tests; fake timers for toast duration tests
+
+### What you're practicing
+
+- System design thinking for shared components
+- Testability and contracts that survive refactors
+- Internationalization and theming basics
+
+### How interviewers evaluate
+
+| Category      | What to Look For                                                             |
+| ------------- | ---------------------------------------------------------------------------- |
+| API stability | Clear contracts; minimal breaking changes                                    |
+| Theming/i18n  | Practical support beyond a demo                                              |
+| Test coverage | Right tests at right layers; deterministic timing                            |
+| Ownership     | Can articulate future evolution (e.g., snackbars vs toasts, sheets, drawers) |
+
+### Self-check
+
+- Can you cap toasts (e.g., max 3) and queue the rest predictably?
+- Do your tests fail if focus escapes the modal or a toast never dismisses?
+
+## Summary Rubric
+
+| Stage | Focus                  | Evaluation Emphasis                                    | Bar for Senior                |
+| ----- | ---------------------- | ------------------------------------------------------ | ----------------------------- |
+| 1     | Core behaviors         | Reliable open/close; stacking; auto-dismiss            | Solid, bug-free baseline      |
+| 2     | Accessibility & focus  | Dialog semantics; focus trap/restoration; live regions | Fully operable and inclusive  |
+| 3     | Headless API & portals | Reusable primitives; correct layering                  | Clean, composable APIs        |
+| 4     | Timing & reliability   | Deterministic timers; reduced motion; route cleanup    | Robust under lifecycle stress |
+| 5     | Extensibility & tests  | Theming/RTL; queue policy; test suite                  | Scalable and well-verified    |
+
+Senior-level performance typically means: Stage 1–2 are flawless; Stage 3 produces a clean headless API used in multiple spots; Stage 4 demonstrates resilient timing and motion; Stage 5 shows a thoughtful queue policy, theming, and a maintainable test plan.
+
+## Common Pitfalls
+
+- Focus escaping the modal or not being restored to the trigger on close
+- Live regions that announce repeatedly or not at all
+- Toast timers continuing after unmount, causing "setState on unmounted" warnings
+- Portals without a coherent z-index strategy, leading to stacking bugs
+- Animations that block interaction or trap focus during exits
+- Overloaded APIs (too many props) instead of a small headless primitive
+
+## Minimal Materials to Start
+
+- Toast and Modal TypeScript types
+- A ToastProvider skeleton and useToast() hook stub
+- A useModal() hook stub and a simple `<Modal>` presenter
+- A small demo page with buttons to enqueue toasts and open nested modals
+- Test harness with fake timers and an a11y checker (axe)
