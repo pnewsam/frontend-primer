@@ -1,0 +1,35 @@
+---
+title: Data Table (Sort / Filter / Paginate)
+layout: "../../layouts/Layout.astro"
+---
+
+# Data Table (Sort / Filter / Paginate)
+
+## Scenario
+
+Implement a product table with sorting, filtering, and pagination.
+
+## Core Tasks
+
+- Sort by column header and filter via text input
+- Paginate data client-side
+- Handle empty and loading states
+
+## Senior-Level Extensions
+
+- Create a headless table logic layer separate from UI
+- Sync sort/filter/page state to URL parameters
+- Simulate server-driven pagination with a fake API
+- Add cursor-based pagination and skeleton loaders
+- Virtualize large datasets for performance
+- Add tests for sorting stability and state synchronization
+
+## Evaluation Criteria
+
+| Area           | Expectation                                      |
+| -------------- | ------------------------------------------------ |
+| Architecture   | Reusable headless logic and clean UI             |
+| State Handling | Correct sync across pagination, URL, and filters |
+| Performance    | Virtualization and efficient rendering           |
+| Accessibility  | Keyboard navigation and focus management         |
+| Reliability    | Error handling and consistent state recovery     |

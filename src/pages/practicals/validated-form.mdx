@@ -1,0 +1,35 @@
+---
+title: Validated Form with Async Checks
+layout: "../../layouts/Layout.astro"
+---
+
+# Validated Form with Async Checks
+
+## Scenario
+
+Build a registration form with client-side validation and an async username availability check.
+
+## Core Tasks
+
+- Controlled inputs for email, username, password, confirm password
+- Inline validation and disabled submit when invalid
+- Asynchronous username check on blur
+
+## Senior-Level Extensions
+
+- Shared schema-based validation (Zod/Yup) with TS inference
+- Cancel stale async validations
+- Combine client, async, and server validations in one flow
+- Add password strength indicator and i18n error handling
+- Implement robust retry and recovery on submission
+- Write unit and integration tests for validation and async behavior
+
+## Evaluation Criteria
+
+| Area             | Expectation                                    |
+| ---------------- | ---------------------------------------------- |
+| State Management | Derived validity, minimal duplication          |
+| Async Control    | Race-safe, cancellable validations             |
+| UX               | Clear, responsive feedback                     |
+| Architecture     | Centralized schema and clean structure         |
+| Testing          | Comprehensive coverage of rules and edge cases |

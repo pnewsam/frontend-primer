@@ -1,0 +1,34 @@
+---
+title: Toasts and Modal System
+layout: "../../layouts/Layout.astro"
+---
+
+# Toasts and Modal System
+
+## Scenario
+
+Develop a reusable global toast system and a modal component.
+
+## Core Tasks
+
+- Toast: enqueue, auto-dismiss, manual close
+- Modal: open/close behavior, backdrop, ESC and click-outside close, focus return
+
+## Senior-Level Extensions
+
+- Implement headless primitives (useToast, useModal) using context
+- Add focus traps and nested modal handling via portals
+- Support toast priorities, stacking, and motion preferences
+- Ensure ARIA compliance and inert background for modals
+- Provide RTL, theme, and reduced-motion support
+- Add tests for focus management, timing, and accessibility
+
+## Evaluation Criteria
+
+| Area          | Expectation                                    |
+| ------------- | ---------------------------------------------- |
+| API Design    | Composable and reusable primitives             |
+| Accessibility | Correct focus and ARIA handling                |
+| Resilience    | Cleanup on route changes and unmounts          |
+| Animation     | Smooth, non-blocking, motion-safe transitions  |
+| Testing       | Reliable accessibility and timing verification |

@@ -1,0 +1,35 @@
+---
+title: Infinite Scroll Feed with Caching
+layout: "../../layouts/Layout.astro"
+---
+
+# Infinite Scroll Feed with Caching
+
+## Scenario
+
+Create a feed that loads additional posts as the user scrolls.
+
+## Core Tasks
+
+- Fetch next page when the bottom sentinel becomes visible
+- Show loading indicators and an end-of-feed message
+
+## Senior-Level Extensions
+
+- Cancel inflight requests and de-duplicate pages
+- Implement client-side cache with stale-while-revalidate logic
+- Support optimistic "like" mutations with rollback
+- Add retry logic with exponential backoff
+- Preserve scroll position across navigation
+- Apply image lazy-loading, prefetching, and virtualization
+- Write tests for race conditions and pagination integrity
+
+## Evaluation Criteria
+
+| Area         | Expectation                                   |
+| ------------ | --------------------------------------------- |
+| Async Logic  | Robust cancellation, retry, and cache control |
+| Performance  | Smooth scroll and efficient resource usage    |
+| Reliability  | Handles flaky networks gracefully             |
+| Architecture | Modular and cache-aware design                |
+| Testing      | Deterministic, race-safe test coverage        |

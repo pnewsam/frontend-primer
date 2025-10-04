@@ -1,0 +1,35 @@
+---
+title: Debounced Search / Autocomplete
+layout: "../../layouts/Layout.astro"
+---
+
+# Debounced Search / Autocomplete
+
+## Scenario
+
+Implement a user search component that fetches suggestions from an API and supports keyboard navigation.
+
+## Core Tasks
+
+- Input triggers API fetch with 300ms debounce
+- Display loading, error, and empty states
+- Render selectable results list
+
+## Senior-Level Extensions
+
+- Abort stale requests and handle race conditions
+- Prefetch likely queries when focused
+- Virtualize large result sets
+- Implement full ARIA combobox compliance
+- Extract a headless useAutocomplete() hook and render prop component
+- Add unit and integration tests for debounce, cancellation, and navigation
+
+## Evaluation Criteria
+
+| Area          | Expectation                                |
+| ------------- | ------------------------------------------ |
+| Correctness   | Handles async safely, no race bugs         |
+| Architecture  | Clear separation of logic and presentation |
+| Accessibility | Proper keyboard and ARIA support           |
+| Performance   | Efficient rendering and debouncing         |
+| Testing       | Thorough timing and behavior coverage      |
