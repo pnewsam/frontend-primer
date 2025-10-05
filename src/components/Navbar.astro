@@ -1,14 +1,21 @@
 ---
 import Container from "./Container.astro";
 import { Home } from "lucide-astro";
+import { isActivePage } from "../lib/utils";
+
+// Get current pathname
+const currentPath = Astro.url.pathname;
 ---
 
 <nav>
   <Container class:list={"py-4"}>
-    <ul class="flex items-center gap-4">
+    <ul class="flex items-center gap-4 space-y-2">
       <li>
         <a
-          class="hover:underline inline-flex items-center gap-2 text-blue-500 hover:text-blue-600"
+          class:list={["inline-flex items-center gap-2", {
+            "text-blue-700 bg-blue-50 px-2 py-1 rounded-md": isActivePage(currentPath, "/home"),
+            "text-blue-500 hover:text-blue-600 hover:underline": !isActivePage(currentPath, "/home"),
+          }]}
           href="/"
         >
           <Home size={16} />
