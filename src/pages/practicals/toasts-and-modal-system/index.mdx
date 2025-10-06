@@ -1,6 +1,6 @@
 ---
 title: Toasts and Modal System
-layout: "../../layouts/Layout.astro"
+layout: "@/layouts/Layout.astro"
 ---
 
 # Toasts and Modal System
@@ -26,7 +26,7 @@ This exercise probes: portals and layering, focus management, keyboard handling,
 - No external UI libraries for components; lightweight utility libs OK
 - You may stub a router to simulate route changes/unmounts
 
-## Stage 1 — Core Behaviors (Foundational)
+## Stage 1 — Core Behaviors
 
 ### Goal
 
@@ -66,7 +66,7 @@ This exercise probes: portals and layering, focus management, keyboard handling,
 - Can you enqueue 3 toasts quickly without clipping or overlap bugs?
 - Does the modal close consistently via ESC, backdrop, and action buttons?
 
-## Stage 2 — Accessibility and Focus Management (Intermediate)
+## Stage 2 — Accessibility and Focus Management
 
 ### Goal
 
@@ -105,7 +105,7 @@ This exercise probes: portals and layering, focus management, keyboard handling,
 - Navigate with keyboard only: can you open, interact, and close the modal without focus escapes?
 - Do toasts announce a single time and not steal focus?
 
-## Stage 3 — Headless API and Portals (Advanced)
+## Stage 3 — Headless API and Portals
 
 ### Goal
 
@@ -145,7 +145,7 @@ This exercise probes: portals and layering, focus management, keyboard handling,
 - Could another engineer consume useModal and ToastProvider without reading your code?
 - Do modals and toasts layer predictably (no overlap obscuring)?
 
-## Stage 4 — Timing, Reliability, and Motion (Senior)
+## Stage 4 — Timing, Reliability, and Motion
 
 ### Goal
 
@@ -179,7 +179,7 @@ This exercise probes: portals and layering, focus management, keyboard handling,
 - Fast-toggle a modal open/close during an exit animation—any stuck focus or double-calls?
 - Hover a toast near expiry—does it extend reliably and then dismiss?
 
-## Stage 5 — Extensibility, Theming, and Testing Strategy (Meta)
+## Stage 5 — Extensibility, Theming, and Testing Strategy
 
 ### Goal
 

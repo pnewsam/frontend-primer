@@ -1,6 +1,6 @@
 ---
 title: Data Table (Sort / Filter / Paginate)
-layout: "../../layouts/Layout.astro"
+layout: "@/layouts/Layout.astro"
 ---
 
 # Data Table (Sort / Filter / Paginate)
@@ -43,7 +43,7 @@ GET /api/products?cursor=<opaque>&q=<text>&sort=<field>:<asc|desc>&limit=<k>
 - No table libraries initially. You may introduce your own headless layer as you advance
 - Use randomized latency and occasional 500/429 in server mode
 
-## Stage 1 — Client-Side Table (Foundational)
+## Stage 1 — Client-Side Table
 
 ### Goal
 
@@ -77,7 +77,7 @@ GET /api/products?cursor=<opaque>&q=<text>&sort=<field>:<asc|desc>&limit=<k>
 - Do sort and filter survive page changes without inconsistency?
 - Are derived lists memoized to avoid unnecessary recomputations?
 
-## Stage 2 — URL State & Table Control Surface (Intermediate)
+## Stage 2 — URL State & Table Control Surface
 
 ### Goal
 
@@ -111,7 +111,7 @@ GET /api/products?cursor=<opaque>&q=<text>&sort=<field>:<asc|desc>&limit=<k>
 - Refresh the page: does the table restore exactly?
 - Hit back/forward: do filter/sort/page reflect history without losing derived state?
 
-## Stage 3 — Server-Driven Pagination (Advanced)
+## Stage 3 — Server-Driven Pagination
 
 ### Goal
 
@@ -149,7 +149,7 @@ GET /api/products?cursor=<opaque>&q=<text>&sort=<field>:<asc|desc>&limit=<k>
 - Throttle network; change sort rapidly—do late responses overwrite newer state?
 - On error, can you retry without losing current context?
 
-## Stage 4 — Performance, Accessibility, and Table API (Senior)
+## Stage 4 — Performance, Accessibility, and Table API
 
 ### Goal
 
@@ -200,7 +200,7 @@ type Column<T> = {
 - Can you navigate header sorts and pagination via keyboard alone?
 - Does virtualization behave correctly with dynamic row heights or is it documented as a constraint?
 
-## Stage 5 — Reflection, Testing, and Hardening (Meta)
+## Stage 5 — Reflection, Testing, and Hardening
 
 ### Goal
 

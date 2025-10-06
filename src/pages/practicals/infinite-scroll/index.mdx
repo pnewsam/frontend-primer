@@ -1,6 +1,6 @@
 ---
 title: Infinite Scroll Feed with Caching
-layout: "../../layouts/Layout.astro"
+layout: "@/layouts/Layout.astro"
 ---
 
 # Infinite Scroll Feed with Caching
@@ -39,7 +39,7 @@ Posts with fields: id, author, content, createdAt, liked (boolean), likeCount (n
 - IntersectionObserver preferred over scroll math
 - No external data libs required (you may discuss React Query-style patterns in Stage 4)
 
-## Stage 1 — Load More on Scroll (Foundational)
+## Stage 1 — Load More on Scroll
 
 ### Goal
 
@@ -71,7 +71,7 @@ Posts with fields: id, author, content, createdAt, liked (boolean), likeCount (n
 - Does the sentinel trigger exactly once per page (no duplicate requests)?
 - Does retry resume correctly after an error without losing already-fetched posts?
 
-## Stage 2 — De-duplication and Race Safety (Intermediate)
+## Stage 2 — De-duplication and Race Safety
 
 ### Goal
 
@@ -108,7 +108,7 @@ Posts with fields: id, author, content, createdAt, liked (boolean), likeCount (n
 - If the server returns duplicates across page boundaries, do you ever show repeats?
 - If the sentinel momentarily hides/shows, do you fire again unnecessarily?
 
-## Stage 3 — Optimistic Mutations (Advanced)
+## Stage 3 — Optimistic Mutations
 
 ### Goal
 
@@ -140,7 +140,7 @@ Posts with fields: id, author, content, createdAt, liked (boolean), likeCount (n
 - Simulate a 409/500: does the like revert cleanly and show a clear message?
 - Can you quickly toggle like/unlike without glitches or counter drift?
 
-## Stage 4 — Caching, Prefetching, and Performance (Senior)
+## Stage 4 — Caching, Prefetching, and Performance
 
 ### Goal
 
@@ -175,7 +175,7 @@ Posts with fields: id, author, content, createdAt, liked (boolean), likeCount (n
 - Toggle network throttling: does cached data appear immediately with a later quiet refresh?
 - Does virtualization preserve keyboard focus and scroll position when items change?
 
-## Stage 5 — Reliability: Backoff, Recovery, and State Restoration (Meta)
+## Stage 5 — Reliability: Backoff, Recovery, and State Restoration
 
 ### Goal
 

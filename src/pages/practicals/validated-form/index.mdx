@@ -1,6 +1,6 @@
 ---
 title: Validated Form with Async Checks
-layout: "../../layouts/Layout.astro"
+layout: "@/layouts/Layout.astro"
 ---
 
 # Validated Form with Async Checks
@@ -40,7 +40,7 @@ body: { email, username, password }
 - No form libraries for Stage 1–2; schema lib (e.g., Zod/Yup) allowed from Stage 3 onward.
 - You may simulate APIs with setTimeout and random failures.
 
-## Stage 1 — Core Form and Client Validation (Foundational)
+## Stage 1 — Core Form and Client Validation
 
 ### Goal
 
@@ -77,7 +77,7 @@ body: { email, username, password }
 - Does toggling between valid/invalid states cleanly update the button?
 - Can you explain your state shape and why it's minimal?
 
-## Stage 2 — Async Username Availability (Intermediate)
+## Stage 2 — Async Username Availability
 
 ### Goal
 
@@ -116,7 +116,7 @@ body: { email, username, password }
 - How do you prevent spamming the endpoint while typing quickly?
 - What happens if the check fails due to 429—do you surface a retry?
 
-## Stage 3 — Submission Flow and Resilience (Advanced)
+## Stage 3 — Submission Flow and Resilience
 
 ### Goal
 
@@ -155,7 +155,7 @@ body: { email, username, password }
 - Simulate a server-side username error even though the async check passed—does your form reconcile correctly?
 - Do you return focus to the first errored field after submit fails?
 
-## Stage 4 — Architecture, Accessibility, and UX Polish (Senior)
+## Stage 4 — Architecture, Accessibility, and UX Polish
 
 ### Goal
 
@@ -203,7 +203,7 @@ body: { email, username, password }
 - Can you run an automated a11y audit (e.g., axe) and fix the basics?
 - Under React Profiler, does typing cause only necessary updates?
 
-## Stage 5 — Reflection and Testing Strategy (Meta)
+## Stage 5 — Reflection and Testing Strategy
 
 ### Goal
 
