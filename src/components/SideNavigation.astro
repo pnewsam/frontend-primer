@@ -1,0 +1,51 @@
+---
+import { isActivePage } from "../lib/utils";
+
+const pagesByCategory = {
+  "Home": [
+    { url: "/", title: "Home" },
+  ],
+  "Topics": [
+    { url: "/topics/dom", title: "DOM" },
+    { url: "/topics/browser-storage", title: "Browser Storage" },
+    { url: "/topics/authentication", title: "Authentication" },
+    { url: "/topics/cryptography", title: "Cryptography" },
+  ],
+  "Practicals": [
+    { url: "/practicals/debounced-search", title: "Debounced Search" },
+    { url: "/practicals/validated-form", title: "Validated Form" },
+    { url: "/practicals/data-table", title: "Data Table" },
+    { url: "/practicals/infinite-scroll", title: "Infinite Scroll" },
+    { url: "/practicals/toasts-and-modal-system", title: "Toasts and Modal System" },
+  ],
+};
+
+const currentPath = Astro.url.pathname;
+---
+
+<div class:list={"py-10 md:py-20 sticky top-0 left-0 pr-4 space-y-4"}>
+  {
+    Object.entries(pagesByCategory).map(([groupName, pages]) => (
+        <p class="uppercase text-xs mb-2">{groupName}</p>
+        <ul class="space-y-2 w-full">
+          {
+            pages.map((page) => {
+              const active = isActivePage(currentPath, page.url);
+              return (
+                <li class="w-full">
+                  <a
+                    class:list={["w-full pl-2 no-underline text-sm font-medium transition-colors rounded-sm", {
+                      "text-blue-700 bg-blue-50 px-2 py-1": active,
+                      "text-blue-500 border-transparent hover:bg-blue-50 hover:text-blue-600": !active,
+                    }]}
+                    href={page.url}
+                  >
+                    {page.title}
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+    ))}
+</div>

@@ -4,6 +4,6 @@ import { cn } from "../lib/utils";
 const { class: className } = Astro.props;
 ---
 
-<div class={cn("container max-w-screen-lg px-12 mx-auto", className)}>
+<div class={cn("container max-w-screen-md lg:max-w-screen-lg px-4 md:px-8 mx-auto", className)}>
   <slot />
 </div>
