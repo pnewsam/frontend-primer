@@ -5,15 +5,24 @@ layout: "@/layouts/Layout.astro"
 
 # Browser Storage
 
-## In Memory (Javascript Object)
+Most of the data we work with is stored on the **server side**. For many types of data, it's important that the server remains the ultimate source of truth. Your login password, for example. The server needs to decide whether or not you're valid user, by storing your password and checking it every time you log in.
+
+There are some types of data however that it makes sense to store on the **client side**. These are things like transient application UI state (your preferred **color theme**, or whether a sidebar is **collapsed or open** by default), or an **authentication token** that needs to be included in all outgoing API requests.
+
+For these cases it's helpful to have an understanding of the tools available in modern browsers, and when you might use one over another. The most commonly used are:
+
+- Cookies
+- Session Storage
+- Local Storage
+- IndexedDB
 
 ## Cookies
 
-## Web Storage API
+## Session Storage (Web Storage API)
 
-### Session Storage
+Session Storage and Local Storage were introduced at the same time in the Web Storage API.
 
-### Local Storage
+## Local Storage (Web Storage API)
 
 ## IndexedDB
 
