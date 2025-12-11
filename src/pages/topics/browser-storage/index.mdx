@@ -5,7 +5,7 @@ layout: "@/layouts/Layout.astro"
 
 # Browser Storage
 
-Most of the data we work with is stored on the **server side**. For many types of data, it's important that the server remains the ultimate source of truth. Your login password, for example. The server needs to decide whether or not you're valid user, by storing your password and checking it every time you log in.
+Most of the data we work with is stored on the **server side**. For many types of data, it's important that the server remains the ultimate source of truth. Your login password, for example. The server needs to decide whether or not you're valid user by storing your password and checking it every time you log in. It wouldn't make any sense to store this data on the client side.
 
 There are some types of data however that it makes sense to store on the **client side**. These are things like transient application UI state (your preferred **color theme**, or whether a sidebar is **collapsed or open** by default), or an **authentication token** that needs to be included in all outgoing API requests.
 
@@ -17,6 +17,8 @@ For these cases it's helpful to have an understanding of the tools available in 
 - IndexedDB
 
 ## Cookies
+
+Cookies are in some sense an antipattern. They allow the server to set data on the client side, which is not ideal.
 
 ## Session Storage (Web Storage API)
 
