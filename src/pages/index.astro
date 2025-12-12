@@ -1,0 +1,35 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { toNavItems, type PageFrontmatter } from "@/lib/pages";
+
+// Glob all MDX files from each category
+const conceptPages = await Astro.glob<PageFrontmatter>("./concepts/**/index.mdx");
+const topicPages = await Astro.glob<PageFrontmatter>("./topics/**/index.mdx");
+const practicalPages = await Astro.glob<PageFrontmatter>("./practicals/**/index.mdx");
+const applicationDevelopmentPages = await Astro.glob<PageFrontmatter>("./application-development/**/index.mdx");
+
+const pagesByCategory = {
+  "Concepts": toNavItems(conceptPages),
+  "Topics": toNavItems(topicPages),
+  "Practicals": toNavItems(practicalPages),
+  "Application Development": toNavItems(applicationDevelopmentPages),
+};
+---
+
+<Layout title="Frontend Primer">
+  <h1>Frontend Primer</h1>
+  <p>A collection of study resources for frontend engineers.</p>
+
+  <h2>Table of Contents</h2>
+
+  {Object.entries(pagesByCategory).map(([category, pages]) => (
+    <>
+      <h3>{category}</h3>
+      <ul>
+        {pages.map((page) => (
+          <li><a href={page.url}>{page.title}</a></li>
+        ))}
+      </ul>
+    </>
+  ))}
+</Layout>

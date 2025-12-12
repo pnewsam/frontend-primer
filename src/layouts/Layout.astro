@@ -13,7 +13,7 @@ import Article from "../components/Article.astro";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/prism-one-light.css" />
     <link rel="stylesheet" href="../styles/globals.css" />
     <meta name="generator" content={Astro.generator} />
@@ -46,9 +46,9 @@ import Article from "../components/Article.astro";
     />
     <title>Frontend Primer</title>
   </head>
-  <body>
+  <body class="bg-neutral-50">
     <!-- <Navbar /> -->
-    <Container class="min-h-screen grid grid-cols-[200px_1fr] gap-4 bg-white">
+    <Container class="min-h-screen grid grid-cols-[180px_1fr] gap-4">
       <div class="relative">
         <SideNavigation />
       </div>
@@ -62,7 +62,7 @@ import Article from "../components/Article.astro";
 <style>
   html,
   body {
-    font-family: "Source Sans 3", sans-serif;
+    font-family: "Newsreader", serif;
     margin: 0;
     width: 100%;
     height: 100%;
