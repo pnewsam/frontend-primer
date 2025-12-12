@@ -3,17 +3,15 @@ import { isActivePage } from "../lib/utils";
 import { toNavItems, type PageFrontmatter } from "../lib/pages";
 
 // Glob all MDX files from each category
-const conceptPages = await Astro.glob<PageFrontmatter>("../pages/concepts/**/index.mdx");
 const topicPages = await Astro.glob<PageFrontmatter>("../pages/topics/**/index.mdx");
+  const applicationDevelopmentPages = await Astro.glob<PageFrontmatter>("../pages/application-development/**/index.mdx");
 const practicalPages = await Astro.glob<PageFrontmatter>("../pages/practicals/**/index.mdx");
-const applicationDevelopmentPages = await Astro.glob<PageFrontmatter>("../pages/application-development/**/index.mdx");
 
 const pagesByCategory = {
   "Home": [{ url: "/", title: "Home" }],
-  "Concepts": toNavItems(conceptPages),
   "Topics": toNavItems(topicPages),
-  "Practicals": toNavItems(practicalPages),
   "Application Development": toNavItems(applicationDevelopmentPages),
+  "Practicals": toNavItems(practicalPages),
 };
 
 const currentPath = Astro.url.pathname;

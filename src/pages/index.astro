@@ -3,16 +3,14 @@ import Layout from "@/layouts/Layout.astro";
 import { toNavItems, type PageFrontmatter } from "@/lib/pages";
 
 // Glob all MDX files from each category
-const conceptPages = await Astro.glob<PageFrontmatter>("./concepts/**/index.mdx");
+const applicationDevelopmentPages = await Astro.glob<PageFrontmatter>("./application-development/**/index.mdx");
 const topicPages = await Astro.glob<PageFrontmatter>("./topics/**/index.mdx");
 const practicalPages = await Astro.glob<PageFrontmatter>("./practicals/**/index.mdx");
-const applicationDevelopmentPages = await Astro.glob<PageFrontmatter>("./application-development/**/index.mdx");
 
 const pagesByCategory = {
-  "Concepts": toNavItems(conceptPages),
   "Topics": toNavItems(topicPages),
-  "Practicals": toNavItems(practicalPages),
   "Application Development": toNavItems(applicationDevelopmentPages),
+  "Practicals": toNavItems(practicalPages),
 };
 ---
 
