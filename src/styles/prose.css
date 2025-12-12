@@ -1,0 +1,77 @@
+/* Prose styles using Tailwind's @apply directive */
+
+.prose {
+  /* Paragraphs */
+  & :where(p):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply mt-0 mb-4 text-neutral-800 text-[18px] font-[400];
+  }
+
+  /* All headings */
+  & :where(h1, h2, h3, h4, h5, h6):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply mt-0 font-medium mb-4;
+  }
+
+  /* H1 specific */
+  & :where(h1):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply pb-4 mb-4;
+  }
+
+  /* H2 specific */
+  & :where(h2):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply pb-2 mb-2 top-0 z-10 py-2;
+  }
+
+  /* Lists */
+  & :where(ul):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply mt-0 mb-4;
+  }
+
+  & :where(li):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply m-0;
+  }
+
+  /* Code blocks */
+  & :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply rounded-lg p-4 border border-neutral-200;
+  }
+
+  /* Inline code */
+  & :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply px-2 py-1 rounded-lg;
+  }
+
+  /* Blockquotes */
+  & :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply text-neutral-800 rounded-lg px-4 pt-4 pb-2 border border-neutral-200;
+  }
+
+  /* Links */
+  & :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply text-blue-500 no-underline font-medium;
+
+    &:hover {
+      @apply text-blue-600 underline;
+    }
+  }
+
+  /* Tables */
+  & :where(table):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply border border-neutral-200;
+  }
+
+  & :where(thead):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply border-b border-neutral-200;
+  }
+
+  & :where(tbody):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply border-t border-neutral-200;
+  }
+
+  & :where(th):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply px-2 py-1 bg-neutral-100;
+  }
+
+  & :where(td):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply px-2 py-1;
+  }
+}

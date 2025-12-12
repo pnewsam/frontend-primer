@@ -22,5 +22,5 @@ export function toNavItems(
       url: getUrlFromPath(page.file),
       title: page.frontmatter.title,
     }))
-    .sort((a, b) => a.title.localeCompare(b.title));
+    .sort((a, b) => a.url.localeCompare(b.url));
 }

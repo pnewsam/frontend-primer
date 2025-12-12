@@ -1,27 +1,10 @@
 ---
-import { cn } from "../lib/utils";
+import "../styles/prose.css";
 ---
 
-<main class:list={"my-8 md:my-12 bg-white shadow-xs border-l-8 border-l-neutral-200 rounded-r-3xl rounded-l-sm border border-neutral-200 px-24 py-24"}>
+<main class:list={"my-8 md:my-12 bg-white rounded-r-3xl rounded-l-sm border border-neutral-200 p-16 lg:p-24"}>
   <article
-    class={cn(
-      "prose",
-      "prose-p:mt-0 prose-p:mb-4 prose-p:text-neutral-800 prose-p:text-[18px] prose-p:font-light",
-      "prose-headings:mt-0 prose-headings:font-medium prose-headings:mb-4",
-      "prose-h1:pb-2 prose-h1:mb-4 prose-h1:pb-4 prose-p:font-[400]",
-      "prose-h2:pb-2 prose-h2:mb-2 prose-h2:top-0 prose-h2:z-10 prose-h2:py-2",
-      "prose-ul:mt-0 prose-ul:mb-4",
-      "prose-li:m-0",
-      "prose-code:bg-neutral-100 prose-code:px-2 prose-code:py-1",
-      "prose-blockquote:text-neutral-800 prose-blockquote:bg-neutral-100 prose-blockquote:px-4 prose-blockquote:pt-4 prose-blockquote:pb-2 prose-blockquote:border prose-blockquote:border-neutral-200 prose-blockquote:rounded-md",
-      "prose-a:text-blue-500 prose-a:no-underline prose-a:font-medium hover:prose-a:text-blue-600 hover:prose-a:underline",
-      "prose-pre:bg-neutral-100 prose-pre:p-4 prose-pre:border prose-pre:border-neutral-200",
-      "prose-table:border prose-table:border-neutral-200",
-      "prose-thead:border-b prose-thead:border-neutral-200",
-      "prose-tbody:border-t prose-tbody:border-neutral-200",
-      "prose-th:px-2 prose-th:py-1 prose-th:bg-neutral-100",
-      "prose-td:px-2 prose-td:py-1",
-    )}
+    class="prose"
   >
     <slot />
   </article>
