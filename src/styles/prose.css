@@ -7,7 +7,10 @@
   }
 
   /* All headings */
-  & :where(h1, h2, h3, h4, h5, h6):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  &
+    :where(h1, h2, h3, h4, h5, h6):not(
+      :where([class~="not-prose"], [class~="not-prose"] *)
+    ) {
     @apply mt-0 font-medium mb-4;
   }
 
@@ -32,17 +35,24 @@
 
   /* Code blocks */
   & :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply rounded-lg p-4 border border-neutral-200;
+    @apply rounded-xl p-4 border bg-white border-neutral-200;
   }
 
   /* Inline code */
   & :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply px-2 py-1 rounded-lg;
+    @apply px-2 py-1 rounded-xl;
   }
 
   /* Blockquotes */
-  & :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply text-neutral-800 rounded-lg px-4 pt-4 pb-2 border border-neutral-200;
+  &
+    :where(blockquote):not(
+      :where([class~="not-prose"], [class~="not-prose"] *)
+    ) {
+    @apply text-neutral-600 rounded-xl p-5 border border-neutral-200 bg-white;
+  }
+
+  & :where(blockquote) p {
+    @apply mb-0 text-base text-neutral-600;
   }
 
   /* Links */
@@ -56,22 +66,14 @@
 
   /* Tables */
   & :where(table):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply border border-neutral-200;
-  }
-
-  & :where(thead):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply border-b border-neutral-200;
-  }
-
-  & :where(tbody):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply border-t border-neutral-200;
+    @apply border-separate border-spacing-0 border border-neutral-200 rounded-xl overflow-hidden;
   }
 
   & :where(th):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply px-2 py-1 bg-neutral-100;
+    @apply px-3 py-2 bg-neutral-100 border-b border-neutral-200;
   }
 
   & :where(td):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply px-2 py-1;
+    @apply px-3 py-2;
   }
 }

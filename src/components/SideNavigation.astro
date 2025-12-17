@@ -19,7 +19,7 @@ const pagesByCategory = {
 const currentPath = Astro.url.pathname;
 ---
 
-<div class:list={"py-10 md:py-20 sticky top-0 left-0 space-y-4"}>
+<div class:list={"py-10 md:py-20 sticky top-0 h-screen overflow-y-auto left-0 border-r border-neutral-200 pr-8 space-y-4"}>
   {
     Object.entries(pagesByCategory).map(([groupName, pages]) => (
         <p class="uppercase tracking-widest text-neutral-500 text-xs mb-2 px-2">{groupName}</p>
