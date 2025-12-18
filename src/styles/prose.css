@@ -74,6 +74,6 @@
   }
 
   & :where(td):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply px-3 py-2;
+    @apply px-3 py-2 bg-white;
   }
 }

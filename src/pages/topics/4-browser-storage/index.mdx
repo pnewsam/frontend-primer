@@ -1,0 +1,30 @@
+---
+title: Browser Storage
+layout: "@/layouts/Layout.astro"
+---
+
+# Browser Storage
+
+Most of the data we work with is stored on the **server side**. For many types of data, it's important that the server remains the ultimate source of truth. Your login password, for example. The server needs to decide whether or not you're valid user by storing your password and checking it every time you log in. It wouldn't make much sense to store this data on the client side.
+
+There are some types of data however that it makes sense to store on the **client side**. These are things like local user preferences, application UI state, or credentials that needs to be included in all outgoing API requests.
+
+For these cases it's helpful to have an understanding of the tools available in modern browsers, and when you might use one over another. The most commonly used are:
+
+- Cookies
+- Session Storage
+- Local Storage
+- IndexedDB
+
+## Cookies
+
+Cookies are in some sense an antipattern. They allow the **server** to set data on the **client side**, which is not ideal.
+
+## Session Storage (Web Storage API)
+
+Session Storage and Local Storage were introduced at the same time in the Web Storage API.
+
+## Local Storage (Web Storage API)
+
+## IndexedDB
+
